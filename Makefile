@@ -1,6 +1,6 @@
 .PHONY: all build up down clean fclean re
 
-DATA_DIR = /home/saga37/data
+DATA_DIR = /home/saga/data
 
 all: create_dirs build up
 
@@ -9,30 +9,30 @@ create_dirs:
 	mkdir -p $(DATA_DIR)/wordpress
 
 build:
-	docker-compose -f srcs/docker-compose.yml build
+	docker compose -f srcs/docker-compose.yml build
 
 up: create_dirs
-	docker-compose -f srcs/docker-compose.yml up -d
+	docker compose -f srcs/docker-compose.yml up -d
 
 down:
-	docker-compose -f srcs/docker-compose.yml down
+	docker compose -f srcs/docker-compose.yml down
 
 stop:
-	docker-compose -f srcs/docker-compose.yml stop
+	docker compose -f srcs/docker-compose.yml stop
 
 start:
-	docker-compose -f srcs/docker-compose.yml start
+	docker compose -f srcs/docker-compose.yml start
 
 restart: down up
 
 logs:
-	docker-compose -f srcs/docker-compose.yml logs -f
+	docker compose -f srcs/docker-compose.yml logs -f
 
 ps:
-	docker-compose -f srcs/docker-compose.yml ps
+	docker compose -f srcs/docker-compose.yml ps
 
 clean: down
-	docker-compose -f srcs/docker-compose.yml rm -f
+	docker compose -f srcs/docker-compose.yml rm -f
 
 fclean: clean
 	docker volume rm $$(docker volume ls -q) 2>/dev/null || true
