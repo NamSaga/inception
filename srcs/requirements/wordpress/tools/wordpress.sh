@@ -1,18 +1,19 @@
 #!/bin/bash
 
-set -e
-
 WORDPRESS_DIR="/var/www/html"
+
+# Create required directories
+mkdir -p /run/php
 
 # Wait for MariaDB to be ready
 echo "Waiting for MariaDB to be ready..."
-for i in {1..30}; do
-    if mysqladmin ping -h"mariadb" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent; then
+for i in {1..60}; do
+    if mariadb -h"mariadb" -u"$WORDPRESS_DB_USER" -p"$WORDPRESS_DB_PASSWORD" -e "SELECT 1" &>/dev/null; then
         echo "MariaDB is ready!"
         break
     fi
-    echo "Waiting for MariaDB... ($i/30)"
-    sleep 1
+    echo "Waiting for MariaDB... ($i/60)"
+    sleep 2
 done
 
 # Download and install WordPress if not already present
@@ -26,15 +27,12 @@ if [ ! -f "$WORDPRESS_DIR/wp-config.php" ]; then
     cp -r wordpress/* "$WORDPRESS_DIR/"
     rm -rf /tmp/wordpress /tmp/latest.tar.gz
     
-    # Set permissions
-    chown -R www-data:www-data "$WORDPRESS_DIR"
-    
     # Create wp-config.php
     cat > "$WORDPRESS_DIR/wp-config.php" <<EOF
 <?php
-define('DB_NAME', '$MYSQL_DATABASE');
-define('DB_USER', '$MYSQL_USER');
-define('DB_PASSWORD', '$MYSQL_PASSWORD');
+define('DB_NAME', '$WORDPRESS_DB_NAME');
+define('DB_USER', '$WORDPRESS_DB_USER');
+define('DB_PASSWORD', '$WORDPRESS_DB_PASSWORD');
 define('DB_HOST', 'mariadb:3306');
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
@@ -73,14 +71,18 @@ EOF
         --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
         --admin_email="$WORDPRESS_ADMIN_EMAIL" \
         --skip-email \
-        --allow-root
+        --allow-root || true
     
     # Create regular user
     wp user create "$WORDPRESS_USER" "$WORDPRESS_USER_EMAIL" \
         --user_pass="$WORDPRESS_USER_PASSWORD" \
         --role=subscriber \
-        --allow-root
+        --allow-root || true
 fi
+
+# Set permissions - world readable/writable for host cleanup
+chown -R www-data:www-data "$WORDPRESS_DIR"
+chmod -R 777 "$WORDPRESS_DIR"
 
 # Start PHP-FPM in foreground
 exec php-fpm7.4 -F

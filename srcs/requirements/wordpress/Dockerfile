@@ -10,11 +10,12 @@ RUN apt-get update && apt-get install -y \
     php-xml \
     curl \
     wget \
+    mariadb-client \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /var/www/html
+RUN mkdir -p /var/www/html /run/php
 
-COPY conf/php-fpm.conf /etc/php/7.4/fpm/php-fpm.conf
+COPY conf/php-fpm.conf /etc/php/7.4/fpm/pool.d/www.conf
 COPY tools/wordpress.sh /wordpress.sh
 
 RUN chmod +x /wordpress.sh

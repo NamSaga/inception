@@ -1,38 +1,76 @@
 #!/bin/bash
-set -e 
+
+echo "Starting MariaDB init script..."
+echo "MYSQL_DATABASE: $MYSQL_DATABASE"
+echo "MYSQL_USER: $MYSQL_USER"
+
+# Create socket directory
+mkdir -p /run/mysqld
+chown mysql:mysql /run/mysqld
+
+# Ensure proper ownership and permissions
+chown -R mysql:mysql /var/lib/mysql
+chmod -R 777 /var/lib/mysql
+
+NEED_INIT=false
+
 if [ ! -d /var/lib/mysql/mysql ]; then
-	mariadb-install-db --user=mysql --ldata=/var/lib/mysql > /dev/null 2>&1
+	NEED_INIT=true
+	echo "Initializing database..."
+	mysql_install_db --user=mysql --datadir=/var/lib/mysql
+fi
 
-	mysqld_safe --datadir='/var/lib/mysql' &
-	pid="$!"
+# Check if our database exists
+echo "Starting temporary MariaDB server..."
+mariadbd --user=mysql --datadir=/var/lib/mysql --skip-networking &
+pid="$!"
 
-	sleep 5
+# Wait for server to start
+for i in {1..30}; do
+	if mariadb -u root -e "SELECT 1" &>/dev/null; then
+		echo "MariaDB started successfully"
+		break
+	fi
+	echo "Waiting for MariaDB to start... ($i/30)"
+	sleep 1
+done
 
+# Check if database exists
+DB_EXISTS=$(mariadb -u root -N -e "SHOW DATABASES LIKE '$MYSQL_DATABASE';" 2>/dev/null)
+
+if [ "$NEED_INIT" = true ] || [ -z "$DB_EXISTS" ]; then
+	echo "Configuring database..."
 	mariadb -u root <<-EOSQL
 		DELETE FROM mysql.user WHERE User='';
 		DROP DATABASE IF EXISTS test;
 		DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%';
 		FLUSH PRIVILEGES;
 	EOSQL
-	if [ ! -z "$MARIADB_DATABASE" ]; then
-		mariadb -u root <<-EOSQL
-			CREATE DATABASE IF NOT EXISTS \`$MARIADB_DATABASE\` ;
-		EOSQL
+
+	if [ -n "$MYSQL_DATABASE" ]; then
+		echo "Creating database: $MYSQL_DATABASE"
+		mariadb -u root -e "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\`;"
 	fi
-	if [ ! -z "$MARIADB_USER" ] && [ ! -z "$MARIADB_PASSWORD" ]; then
-		mariadb -u root <<-EOSQL
-			CREATE USER '$MARIADB_USER'@'%' IDENTIFIED BY '$MARIADB_PASSWORD' ;
-		EOSQL
-		if [ ! -z "$MARIADB_DATABASE" ]; then
-			mariadb -u root <<-EOSQL
-				GRANT ALL PRIVILEGES ON \`$MARIADB_DATABASE\`.* TO '$MARIADB_USER'@'%' ;
-			EOSQL
+
+	if [ -n "$MYSQL_USER" ] && [ -n "$MYSQL_PASSWORD" ]; then
+		echo "Creating user: $MYSQL_USER"
+		mariadb -u root -e "DROP USER IF EXISTS '$MYSQL_USER'@'%';"
+		mariadb -u root -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+		if [ -n "$MYSQL_DATABASE" ]; then
+			mariadb -u root -e "GRANT ALL PRIVILEGES ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'%';"
 		fi
-		mariadb -u root <<-EOSQL
-			FLUSH PRIVILEGES ;
-		EOSQL
-	fi 
-	wait "$pid"
+		mariadb -u root -e "FLUSH PRIVILEGES;"
+	fi
+	
+	# Set permissions for host access
+	chmod -R 777 /var/lib/mysql
+else
+	echo "Database already exists, skipping configuration..."
 fi
-chown -R mysql:mysql /var/lib/mysql
-exec mysqld_safe --datadir='/var/lib/mysql'
+
+echo "Stopping temporary server..."
+kill "$pid"
+wait "$pid" 2>/dev/null || true
+
+echo "Starting MariaDB..."
+exec mariadbd --user=mysql --datadir=/var/lib/mysql --bind-address=0.0.0.0
