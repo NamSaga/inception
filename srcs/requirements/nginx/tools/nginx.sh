@@ -15,7 +15,7 @@ if [ ! -f "$CERT_FILE" ] || [ ! -f "$KEY_FILE" ]; then
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout "$KEY_FILE" \
         -out "$CERT_FILE" \
-        -subj "/C=FR/ST=State/L=City/O=Organization/CN=saga37.42.fr"
+        -subj "/C=FR/ST=State/L=City/O=Organization/CN=rmamisoa.42.fr"
 fi
 
 # Enable NGINX site
