@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update && apt-get install -y \
     php-fpm \
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN mkdir -p /var/www/html /run/php
 
-COPY conf/php-fpm.conf /etc/php/7.4/fpm/pool.d/www.conf
+COPY conf/php-fpm.conf /etc/php/8.2/fpm/pool.d/www.conf
 COPY tools/wordpress.sh /wordpress.sh
 
 RUN chmod +x /wordpress.sh

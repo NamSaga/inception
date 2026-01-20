@@ -1,6 +1,18 @@
 #!/bin/bash
 
 echo "Starting MariaDB init script..."
+
+# Read passwords from secret files if available
+if [ -f /run/secrets/mysql_root_password ]; then
+    MYSQL_ROOT_PASSWORD=$(cat /run/secrets/mysql_root_password)
+fi
+if [ -f /run/secrets/mysql_admin_password ]; then
+    MYSQL_ADMIN_PASSWORD=$(cat /run/secrets/mysql_admin_password)
+fi
+if [ -f /run/secrets/mysql_password ]; then
+    MYSQL_PASSWORD=$(cat /run/secrets/mysql_password)
+fi
+
 echo "MYSQL_DATABASE: $MYSQL_DATABASE"
 echo "MYSQL_USER: $MYSQL_USER"
 

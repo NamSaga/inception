@@ -2,6 +2,17 @@
 
 WORDPRESS_DIR="/var/www/html"
 
+# Read passwords from secret files if available
+if [ -f /run/secrets/mysql_password ]; then
+    WORDPRESS_DB_PASSWORD=$(cat /run/secrets/mysql_password)
+fi
+if [ -f /run/secrets/wordpress_admin_password ]; then
+    WORDPRESS_ADMIN_PASSWORD=$(cat /run/secrets/wordpress_admin_password)
+fi
+if [ -f /run/secrets/wordpress_user_password ]; then
+    WORDPRESS_USER_PASSWORD=$(cat /run/secrets/wordpress_user_password)
+fi
+
 # Create required directories
 mkdir -p /run/php
 
@@ -85,4 +96,4 @@ chown -R www-data:www-data "$WORDPRESS_DIR"
 chmod -R 777 "$WORDPRESS_DIR"
 
 # Start PHP-FPM in foreground
-exec php-fpm7.4 -F
+exec php-fpm8.2 -F

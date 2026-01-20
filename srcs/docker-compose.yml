@@ -4,12 +4,16 @@ services:
     build: ./requirements/mariadb
     image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ADMIN_USER: ${MYSQL_ADMIN_USER}
-      MYSQL_ADMIN_PASSWORD: ${MYSQL_ADMIN_PASSWORD}
+      MYSQL_ADMIN_PASSWORD_FILE: /run/secrets/mysql_admin_password
       MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+    secrets:
+      - mysql_root_password
+      - mysql_admin_password
+      - mysql_password
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
@@ -24,14 +28,18 @@ services:
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
-      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/mysql_password
       WORDPRESS_ADMIN_USER: ${WORDPRESS_ADMIN_USER}
-      WORDPRESS_ADMIN_PASSWORD: ${WORDPRESS_ADMIN_PASSWORD}
+      WORDPRESS_ADMIN_PASSWORD_FILE: /run/secrets/wordpress_admin_password
       WORDPRESS_ADMIN_EMAIL: ${WORDPRESS_ADMIN_EMAIL}
       WORDPRESS_USER: ${WORDPRESS_USER}
-      WORDPRESS_USER_PASSWORD: ${WORDPRESS_USER_PASSWORD}
+      WORDPRESS_USER_PASSWORD_FILE: /run/secrets/wordpress_user_password
       WORDPRESS_USER_EMAIL: ${WORDPRESS_USER_EMAIL}
       WORDPRESS_URL: ${WORDPRESS_URL}
+    secrets:
+      - mysql_password
+      - wordpress_admin_password
+      - wordpress_user_password
     volumes:
       - wordpress_data:/var/www/html
     networks:
@@ -72,3 +80,15 @@ volumes:
 networks:
   inception_network:
     driver: bridge
+
+secrets:
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.txt
+  mysql_admin_password:
+    file: ./secrets/mysql_admin_password.txt
+  mysql_password:
+    file: ./secrets/mysql_password.txt
+  wordpress_admin_password:
+    file: ./secrets/wordpress_admin_password.txt
+  wordpress_user_password:
+    file: ./secrets/wordpress_user_password.txt

@@ -1,4 +1,4 @@
-FROM debian:bullseye
+FROM debian:bookworm
 
 RUN apt-get update && apt-get install -y \
     nginx \
@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY conf/nginx.conf /etc/nginx/sites-available/default
 COPY tools/nginx.sh /nginx.sh
+
 
 RUN chmod +x /nginx.sh
 
