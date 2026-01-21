@@ -68,13 +68,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once( ABSPATH . 'wp-settings.php' );
 ?>
 EOF
-    
-    # Install WordPress using wp-cli
+fi
+
+# Install wp-cli if not present
+if [ ! -f /usr/local/bin/wp ]; then
     curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
     chmod +x wp-cli.phar
     mv wp-cli.phar /usr/local/bin/wp
-    
-    cd "$WORDPRESS_DIR"
+fi
+
+# Check if WordPress is already installed in the database
+cd "$WORDPRESS_DIR"
+if ! wp core is-installed --allow-root 2>/dev/null; then
+    echo "Running WordPress installation..."
     wp core install \
         --url="$WORDPRESS_URL" \
         --title="$WORDPRESS_URL" \
@@ -82,13 +88,15 @@ EOF
         --admin_password="$WORDPRESS_ADMIN_PASSWORD" \
         --admin_email="$WORDPRESS_ADMIN_EMAIL" \
         --skip-email \
-        --allow-root || true
-    
+        --allow-root
+
     # Create regular user
     wp user create "$WORDPRESS_USER" "$WORDPRESS_USER_EMAIL" \
         --user_pass="$WORDPRESS_USER_PASSWORD" \
         --role=subscriber \
         --allow-root || true
+else
+    echo "WordPress is already installed."
 fi
 
 # Set permissions - world readable/writable for host cleanup

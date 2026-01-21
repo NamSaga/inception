@@ -1,6 +1,8 @@
 services:
   mariadb:
     container_name: mariadb
+    env_file:
+      - ../.env
     build: ./requirements/mariadb
     image: mariadb:latest
     environment:
@@ -22,6 +24,8 @@ services:
 
   wordpress:
     container_name: wordpress
+    env_file:
+      - ../.env
     build: ./requirements/wordpress
     image: wordpress:latest
     environment:
@@ -83,12 +87,12 @@ networks:
 
 secrets:
   mysql_root_password:
-    file: ./secrets/mysql_root_password.txt
+    file: ../secrets/mysql_root_password.txt
   mysql_admin_password:
-    file: ./secrets/mysql_admin_password.txt
+    file: ../secrets/mysql_admin_password.txt
   mysql_password:
-    file: ./secrets/mysql_password.txt
+    file: ../secrets/mysql_password.txt
   wordpress_admin_password:
-    file: ./secrets/wordpress_admin_password.txt
+    file: ../secrets/wordpress_admin_password.txt
   wordpress_user_password:
-    file: ./secrets/wordpress_user_password.txt
+    file: ../secrets/wordpress_user_password.txt
