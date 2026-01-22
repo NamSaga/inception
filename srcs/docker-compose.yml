@@ -40,7 +40,7 @@ services:
       WORDPRESS_USER: ${WORDPRESS_USER}
       WORDPRESS_USER_PASSWORD_FILE: /run/secrets/wordpress_user_password
       WORDPRESS_USER_EMAIL: ${WORDPRESS_USER_EMAIL}
-      WORDPRESS_URL: ${WORDPRESS_URL}
+      WORDPRESS_URL: ${WORDPRESS_URL:-https://rmamisoa.42.fr}
     secrets:
       - mysql_password
       - wordpress_admin_password
@@ -61,8 +61,9 @@ services:
     image: nginx:latest
     environment:
       PHP_FPM_PORT: ${PHP_FPM_PORT:-9000}
+      NGINX_PORT: ${NGINX_PORT:-443}
     ports:
-      - "443:443"
+      - "${NGINX_PORT:-443}:${NGINX_PORT:-443}"
     volumes:
       - wordpress_data:/var/www/html
     networks:
