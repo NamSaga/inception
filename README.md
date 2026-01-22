@@ -5,7 +5,7 @@
 
 Inception is a Docker-based infrastructure project that sets up a complete WordPress environment using containerized services. The project deploys three main services:
 
-- **NGINX** - A web server configured with TLS (HTTPS only on port 8443)
+- **NGINX** - A web server configured with TLS (HTTPS only on port 443)
 - **WordPress** - A PHP-FPM based WordPress installation
 - **MariaDB** - A MySQL-compatible database server
 
@@ -16,7 +16,7 @@ All services run in separate Docker containers, communicate through a dedicated 
 ```
                     ┌─────────────┐
                     │   NGINX     │
-                    │  (port 8443) │
+                    │  (port 443) │
                     └──────┬──────┘
                            │
                     ┌──────▼──────┐

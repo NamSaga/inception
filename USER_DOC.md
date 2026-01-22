@@ -99,7 +99,7 @@ Expected: `HTTP/2 200` or `HTTP/1.1 200 OK`
 
 1. Check if containers are running: `docker ps`
 2. Check nginx logs: `docker logs nginx`
-3. Verify port 8443 is not blocked by firewall
+3. Verify port 443 is not blocked by firewall
 
 ### WordPress Installation Page Appears
 
