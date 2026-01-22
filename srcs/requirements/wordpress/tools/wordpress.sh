@@ -2,7 +2,7 @@
 
 WORDPRESS_DIR="/var/www/html"
 PHP_FPM_PORT=${PHP_FPM_PORT:-9000}
-NGINX_PORT=${NGINX_PORT:-80}
+NGINX_PORT=${NGINX_PORT:-443}
 adjust_url_for_port() {
     local url=$1
     local port=$2

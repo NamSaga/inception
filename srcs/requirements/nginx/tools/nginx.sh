@@ -3,8 +3,10 @@
 set -e
 
 PHP_FPM_PORT=${PHP_FPM_PORT:-9000}
+NGINX_PORT=${NGINX_PORT:-443}
 
 sed -i "s/PHP_FPM_PORT_PLACEHOLDER/$PHP_FPM_PORT/g" /etc/nginx/sites-available/default
+sed -i "s/NGINX_PORT_PLACEHOLDER/$NGINX_PORT/g" /etc/nginx/sites-available/default
 
 SSL_DIR="/etc/nginx/ssl"
 CERT_FILE="$SSL_DIR/certificate.crt"

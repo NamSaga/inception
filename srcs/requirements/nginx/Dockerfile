@@ -11,6 +11,7 @@ COPY tools/nginx.sh /nginx.sh
 
 RUN chmod +x /nginx.sh
 
-EXPOSE 443
+ARG NGINX_PORT=443
+EXPOSE ${NGINX_PORT}
 
 ENTRYPOINT ["/nginx.sh"]
