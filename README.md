@@ -90,7 +90,7 @@ This project was developed with assistance from **GitHub Copilot** (Claude Opus 
 
 - **Code Review & Debugging**: Identifying issues in Docker configurations, shell scripts, and compose files
 - **Path Configuration**: Updating file paths when restructuring the project (moving `secrets/` and `.env` to root level)
-- **Script Improvements**: Enhancing the WordPress installation script to properly detect if WordPress is already installed using `wp core is-installed` instead of just checking for file existence
-- **Documentation**: Generating this README file
+- **Script Improvements**: Enhancing the WordPress installation script.
+- **Documentation**: Generating this README file.
 
 All AI-generated code was reviewed and validated before implementation.
