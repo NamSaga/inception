@@ -9,6 +9,6 @@ COPY tools/init.sh /init.sh
 
 RUN chmod +x /init.sh
 
-EXPOSE 3306
+EXPOSE 3307
 
 ENTRYPOINT ["/init.sh"]

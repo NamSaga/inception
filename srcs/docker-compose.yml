@@ -29,6 +29,7 @@ services:
     build: ./requirements/wordpress
     image: wordpress:latest
     environment:
+      PHP_FPM_PORT: ${PHP_FPM_PORT:-9000}
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
@@ -54,8 +55,12 @@ services:
 
   nginx:
     container_name: nginx
+    env_file:
+      - ../.env
     build: ./requirements/nginx
     image: nginx:latest
+    environment:
+      PHP_FPM_PORT: ${PHP_FPM_PORT:-9000}
     ports:
       - "443:443"
     volumes:
@@ -72,14 +77,14 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/saga/data/mariadb
+      device: /home/rmamisoa/data/mariadb
 
   wordpress_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/saga/data/wordpress
+      device: /home/rmamisoa/data/wordpress
 
 networks:
   inception_network:

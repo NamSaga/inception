@@ -2,7 +2,6 @@
 
 echo "Starting MariaDB init script..."
 
-# Read passwords from secret files if available
 if [ -f /run/secrets/mysql_root_password ]; then
     MYSQL_ROOT_PASSWORD=$(cat /run/secrets/mysql_root_password)
 fi
@@ -16,11 +15,9 @@ fi
 echo "MYSQL_DATABASE: $MYSQL_DATABASE"
 echo "MYSQL_USER: $MYSQL_USER"
 
-# Create socket directory
 mkdir -p /run/mysqld
 chown mysql:mysql /run/mysqld
 
-# Ensure proper ownership and permissions
 chown -R mysql:mysql /var/lib/mysql
 chmod -R 777 /var/lib/mysql
 
@@ -32,12 +29,10 @@ if [ ! -d /var/lib/mysql/mysql ]; then
 	mysql_install_db --user=mysql --datadir=/var/lib/mysql
 fi
 
-# Check if our database exists
 echo "Starting temporary MariaDB server..."
 mariadbd --user=mysql --datadir=/var/lib/mysql --skip-networking &
 pid="$!"
 
-# Wait for server to start
 for i in {1..30}; do
 	if mariadb -u root -e "SELECT 1" &>/dev/null; then
 		echo "MariaDB started successfully"
@@ -47,7 +42,6 @@ for i in {1..30}; do
 	sleep 1
 done
 
-# Check if database exists
 DB_EXISTS=$(mariadb -u root -N -e "SHOW DATABASES LIKE '$MYSQL_DATABASE';" 2>/dev/null)
 
 if [ "$NEED_INIT" = true ] || [ -z "$DB_EXISTS" ]; then
@@ -73,8 +67,7 @@ if [ "$NEED_INIT" = true ] || [ -z "$DB_EXISTS" ]; then
 		fi
 		mariadb -u root -e "FLUSH PRIVILEGES;"
 	fi
-	
-	# Set permissions for host access
+
 	chmod -R 777 /var/lib/mysql
 else
 	echo "Database already exists, skipping configuration..."

@@ -1,6 +1,6 @@
 .PHONY: all build up down clean fclean re
 
-DATA_DIR = /home/saga/data
+DATA_DIR = /home/rmamisoa/data
 
 all: create_dirs build up
 
@@ -32,5 +32,12 @@ fclean: clean
 	docker run --rm -v $(DATA_DIR):/data alpine sh -c "rm -rf /data/mariadb/* /data/wordpress/*" 2>/dev/null || true
 	docker volume rm $$(docker volume ls -q) 2>/dev/null || true
 	docker system prune -a -f
+
+#fclean: clean
+#	@docker system prune -af --volumes
+#	@docker volume prune -f
+#	@docker run --rm -v $(DATA_DIR)/mariadb:/data debian:bookworm sh -c 'rm -rf /data/*' >/dev/null 2>&1 || true
+#	@docker run --rm -v $(DATA_DIR)/wordpress:/data debian:bookworm sh -c 'rm -rf /data/*' >/dev/null 2>&1 || true
+#	@rmdir $(DATA_DIR)/mariadb $(DATA_DIR)/wordpress 2>/dev/null || true
 
 re: fclean all

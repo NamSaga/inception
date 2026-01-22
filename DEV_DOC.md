@@ -152,17 +152,17 @@ Data is persisted using bind mounts to the host filesystem:
 
 | Volume | Host Path | Container Path | Service |
 |--------|-----------|----------------|---------|
-| `mariadb_data` | `/home/saga/data/mariadb` | `/var/lib/mysql` | mariadb |
-| `wordpress_data` | `/home/saga/data/wordpress` | `/var/www/html` | wordpress, nginx |
+| `mariadb_data` | `/home/rmamisoa/data/mariadb` | `/var/lib/mysql` | mariadb |
+| `wordpress_data` | `/home/rmamisoa/data/wordpress` | `/var/www/html` | wordpress, nginx |
 
 ### Backup Data
 
 ```bash
 # Backup WordPress files
-sudo tar -czvf wordpress_backup.tar.gz /home/saga/data/wordpress
+sudo tar -czvf wordpress_backup.tar.gz /home/rmamisoa/data/wordpress
 
 # Backup MariaDB data
-sudo tar -czvf mariadb_backup.tar.gz /home/saga/data/mariadb
+sudo tar -czvf mariadb_backup.tar.gz /home/rmamisoa/data/mariadb
 
 # Or use mysqldump inside container
 docker exec mariadb mysqldump -u root -p<password> wordpress_db > backup.sql
@@ -191,7 +191,7 @@ make fclean
 This removes:
 - All containers
 - All volumes
-- All data in `/home/saga/data/`
+- All data in `/home/rmamisoa/data/`
 - All related Docker images
 
 ---
@@ -206,19 +206,19 @@ All services communicate through the `inception_network` bridge network:
 │                                                     │
 │  ┌─────────┐    ┌─────────────┐    ┌─────────────┐ │
 │  │  nginx  │───▶│  wordpress  │───▶│   mariadb   │ │
-│  │  :443   │    │    :9000    │    │    :3306    │ │
+│  │  :8443   │    │    :9000    │    │    :3307    │ │
 │  └─────────┘    └─────────────┘    └─────────────┘ │
 │       │                                             │
 └───────┼─────────────────────────────────────────────┘
         │
         ▼
-   Host :443
+   Host :8443
 
 ```
 
-- **nginx** → Exposed on host port 443, reverse proxies to wordpress:9000
+- **nginx** → Exposed on host port 8443, reverse proxies to wordpress:9000
 - **wordpress** → PHP-FPM listening on port 9000 (internal only)
-- **mariadb** → MySQL on port 3306 (internal only)
+- **mariadb** → MySQL on port 3307 (internal only)
 
 ---
 
