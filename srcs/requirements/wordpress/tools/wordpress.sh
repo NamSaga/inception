@@ -44,7 +44,7 @@ if [ ! -f "$WORDPRESS_DIR/wp-config.php" ]; then
 define('DB_NAME', '$WORDPRESS_DB_NAME');
 define('DB_USER', '$WORDPRESS_DB_USER');
 define('DB_PASSWORD', '$WORDPRESS_DB_PASSWORD');
-define('DB_HOST', 'mariadb:3307');
+define('DB_HOST', 'mariadb:3306');
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 

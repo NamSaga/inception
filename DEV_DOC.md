@@ -206,7 +206,7 @@ All services communicate through the `inception_network` bridge network:
 │                                                     │
 │  ┌─────────┐    ┌─────────────┐    ┌─────────────┐ │
 │  │  nginx  │───▶│  wordpress  │───▶│   mariadb   │ │
-│  │  :8443   │    │    :9000    │    │    :3307    │ │
+│  │  :8443   │    │    :9000    │    │    :3306    │ │
 │  └─────────┘    └─────────────┘    └─────────────┘ │
 │       │                                             │
 └───────┼─────────────────────────────────────────────┘
@@ -218,7 +218,7 @@ All services communicate through the `inception_network` bridge network:
 
 - **nginx** → Exposed on host port 8443, reverse proxies to wordpress:9000
 - **wordpress** → PHP-FPM listening on port 9000 (internal only)
-- **mariadb** → MySQL on port 3307 (internal only)
+- **mariadb** → MySQL on port 3306 (internal only)
 
 ---
 

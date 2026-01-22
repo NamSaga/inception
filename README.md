@@ -26,7 +26,7 @@ All services run in separate Docker containers, communicate through a dedicated 
                            │
                     ┌──────▼──────┐
                     │   MariaDB   │
-                    │  (port 3307)│
+                    │  (port 3306)│
                     └─────────────┘
 ```
 
